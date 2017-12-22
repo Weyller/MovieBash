@@ -1,7 +1,6 @@
 package ca.qc.lbpsb.fusion.fcmnotification;
 
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,10 +24,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.qc.lbpsb.fusion.fcmnotification.Adapter.NotificationsAdapter;
+import ca.qc.lbpsb.fusion.fcmnotification.Adapter.MovieAdapter;
 import ca.qc.lbpsb.fusion.fcmnotification.Manager.SharedPreference;
 import ca.qc.lbpsb.fusion.fcmnotification.Model.Constants;
-import ca.qc.lbpsb.fusion.fcmnotification.Model.Notifications;
+
+import ca.qc.lbpsb.fusion.fcmnotification.Model.Movies;
 import okhttp3.OkHttpClient;
 
 public class NotificationCenterActivity extends AppCompatActivity {
@@ -45,8 +45,8 @@ public class NotificationCenterActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private GridLayoutManager gridLayoutManager;
-    private NotificationsAdapter adapter;
-    private List<Notifications> itemList;
+    private MovieAdapter adapter;
+    private List<Movies> itemList;
 
 
 
@@ -76,12 +76,12 @@ public class NotificationCenterActivity extends AppCompatActivity {
         final String token = SharedPreference.getInstance(this).getDeviceToken();
 
         //===============================================
-       // load_data_from_server(token);
+        load_data_from_server(token);
 
         gridLayoutManager = new GridLayoutManager(this,1);
         recyclerView.setLayoutManager(gridLayoutManager);
 
-        adapter = new NotificationsAdapter(this,itemList);
+        adapter = new MovieAdapter(this,itemList);
         recyclerView.setAdapter(adapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -100,18 +100,12 @@ public class NotificationCenterActivity extends AppCompatActivity {
 
        // loadMessages();
 
-        // Load webview activity
-        loadWebView();
 
 
     }
 
     //------------------------------------------------------
 
-    private void loadWebView() {
-        Intent intent = new Intent(this, WebviewActivity.class);
-        startActivity(intent);
-    }
 
 
     //------------------------------------------------------
@@ -139,14 +133,12 @@ public class NotificationCenterActivity extends AppCompatActivity {
                     for (int i=0; i<array.length(); i++){
 
                         //getting product object from json array
-                        JSONObject notification = array.getJSONObject(i);
+                        JSONObject movie = array.getJSONObject(i);
 
                         //adding the product to product list
-                        itemList.add(new Notifications(
-                                notification.getString("title"),
-                                notification.getString("id_channel"),
-                                 notification.getString("message")
-                               // notification.getString("title")
+                        itemList.add(new Movies(
+                                movie.getString("answer"),
+                                movie.getString("poster")
                         ));
 
 //                        JSONObject object = array.getJSONObject(i);
@@ -213,18 +205,18 @@ public class NotificationCenterActivity extends AppCompatActivity {
                             for (int i = 0; i < array.length(); i++) {
 
                                 //getting product object from json array
-                               JSONObject notification = array.getJSONObject(i);
+                               JSONObject movie = array.getJSONObject(i);
 
                                 //adding the product to product list
-                                itemList.add(new Notifications(
-                                        notification.getString("title"),
-                                        notification.getString("message"),
-                                        notification.getString("image")
+                                itemList.add(new Movies(
+
+                                        movie.getString("message"),
+                                        movie.getString("image")
                                 ));
                             }
 
                             //creating adapter object and setting it to recyclerview
-                           adapter = new NotificationsAdapter(NotificationCenterActivity.this, itemList);
+                           adapter = new MovieAdapter(NotificationCenterActivity.this, itemList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
